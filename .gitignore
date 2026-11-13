@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+.DS_Store
+Thumbs.db
+
+# Alpaca & Private Credentials
+trader/config.json
+trader/state/broker_archive_*.json
+trader/state/ptr-pdfs/
+.env

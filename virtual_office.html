@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wall Street AI Trading Floor - 12 Agentes en Vivo</title>
+  <style>
+    :root {
+      --bg: #070b14;
+      --panel-bg: rgba(15, 23, 42, 0.85);
+      --border: rgba(56, 189, 248, 0.2);
+      --primary: #38bdf8;
+      --green: #22c55e;
+      --red: #ef4444;
+      --purple: #a855f7;
+      --amber: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.3) 0%, transparent 60%),
+        radial-gradient(circle at 10% 90%, rgba(15, 23, 42, 0.8) 0%, transparent 50%);
+    }
+
+    /* TOP BAR & TICKER */
+    header {
+      background: rgba(11, 19, 38, 0.95);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+    .header-main {
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+    .brand-title h1 { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; }
+    .brand-title p { font-size: 11px; color: var(--text-muted); }
+
+    .header-stats { display: flex; gap: 14px; align-items: center; }
+    .stat-pill {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .stat-pill .lbl { font-size: 9px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+    .stat-pill .val { font-size: 13px; font-weight: 800; color: var(--green); }
+
+    .header-actions { display: flex; gap: 10px; }
+    .btn {
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-excel { background: #107c41; color: #fff; box-shadow: 0 4px 12px rgba(16, 124, 65, 0.3); }
+    .btn-excel:hover { background: #0b5c30; transform: translateY(-1px); }
+    .btn-action { background: #0284c7; color: #fff; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
+    .btn-action:hover { background: #0369a1; transform: translateY(-1px); }
+
+    /* WALL STREET TICKER TAPE */
+    .ticker-bar {
+      background: #020617;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+      white-space: nowrap;
+      height: 26px;
+      display: flex;
+      align-items: center;
+    }
+    .ticker-track {
+      display: inline-block;
+      animation: ticker 35s linear infinite;
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0 16px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .up { color: var(--green); }
+    .down { color: var(--red); }
+
+    /* VIRTUAL OFFICE MAIN FLOOR */
+    .floor-wrapper {
+      flex: 1;
+      padding: 20px 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* SCENERY: CITY SKYLINE WALL */
+    .office-room {
+      background: #0b1329;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+      position: relative;
+    }
+
+    /* Skyline Windows */
+    .skyline-header {
+      height: 120px;
+      background: linear-gradient(to bottom, #030712 0%, #0c1838 70%, #1e293b 100%);
+      position: relative;
+      border-bottom: 3px solid #1e293b;
+      overflow: hidden;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 0 30px 10px;
+    }
+    .city-silhouette {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background-image: radial-gradient(circle, #38bdf8 1px, transparent 1px), radial-gradient(circle, #f59e0b 1px, transparent 1px);
+      background-size: 15px 15px, 25px 25px;
+      background-position: 0 0, 10px 10px;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .city-buildings {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      background: 
+        linear-gradient(to right, 
+          #020617 0 40px, transparent 40px 50px,
+          #020617 50px 110px, transparent 110px 120px,
+          #020617 120px 170px, transparent 170px 185px,
+          #020617 185px 260px, transparent 260px 270px,
+          #020617 270px 330px, transparent 330px 345px,
+          #020617 345px 420px, transparent 420px 430px,
+          #020617 430px 500px, transparent 500px 515px,
+          #020617 515px 600px, transparent 600px 610px,
+          #020617 610px 700px, transparent 700px 715px,
+          #020617 715px 820px, transparent 820px 835px,
+          #020617 835px 950px, transparent 950px 965px,
+          #020617 965px 1100px, transparent 1100px 1120px,
+          #020617 1120px 1400px
+        );
+      opacity: 0.85;
+      pointer-events: none;
+    }
+    .room-title-badge {
+      position: relative;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .world-clocks {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      gap: 16px;
+    }
+    .clock-item {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      text-align: center;
+    }
+    .clock-item span { display: block; font-size: 9px; color: var(--text-muted); font-weight: 700; }
+    .clock-item strong { color: #fff; }
+
+    /* FLOOR SURFACE */
+    .room-floor {
+      padding: 30px;
+      background: 
+        radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.95) 100%),
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 30px);
+    }
+
+    /* 3 SECTOR PODS LAYOUT */
+    .sectors-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .sector-pod {
+      background: rgba(11, 18, 33, 0.75);
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 18px;
+      position: relative;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+    }
+    .sector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .sector-title {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sector-status-pill {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    /* DESK STATIONS (2x2 inside each Pod) */
+    .pod-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .workstation {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .workstation:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 28px rgba(56, 189, 248, 0.2);
+      background: #131e33;
+    }
+
+    /* REALISTIC MULTI-MONITOR GRAPHIC */
+    .monitor-rig {
+      width: 100%;
+      height: 48px;
+      background: #020617;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      padding: 4px;
+      position: relative;
+      display: flex;
+      gap: 3px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .screen-panel {
+      flex: 1;
+      background: #070d19;
+      border-radius: 3px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 2px 4px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+    /* Animated mini candlestick bars on screen */
+    .mini-chart {
+      display: flex;
+      align-items: flex-end;
+      height: 18px;
+      gap: 2px;
+      justify-content: space-around;
+    }
+    .bar {
+      width: 3px;
+      border-radius: 1px;
+      animation: bar-grow 2s infinite ease-in-out alternate;
+    }
+    .bar.green { background: var(--green); }
+    .bar.red { background: var(--red); }
+    .bar.blue { background: var(--primary); }
+
+    .mini-ticker-text {
+      font-size: 7px;
+      color: var(--primary);
+      font-family: monospace;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    /* WORKER AVATAR VISUAL (CUTE DETAILED SPRITE) */
+    .avatar-wrapper {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .desk-chair {
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      background: #1e293b;
+      border-radius: 50%;
+      border: 2px solid #334155;
+      z-index: 1;
+    }
+    .worker-figure {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .worker-head {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #f8fafc;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      position: relative;
+    }
+    .worker-body {
+      width: 34px;
+      height: 22px;
+      border-radius: 6px;
+      margin-top: -3px;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 4px;
+      align-items: flex-end;
+      position: relative;
+    }
+    .hands-typing {
+      width: 6px;
+      height: 6px;
+      background: #f8fafc;
+      border-radius: 50%;
+      margin-bottom: 2px;
+    }
+
+    /* Status Glow Orb */
+    .status-orb {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 2px solid #0f172a;
+    }
+    .status-orb.active { background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 1s infinite; }
+    .status-orb.focused { background: var(--purple); box-shadow: 0 0 8px var(--purple); }
+    .status-orb.busy { background: var(--primary); box-shadow: 0 0 10px var(--primary); animation: pulse 0.6s infinite; }
+
+    /* Typing Animation */
+    .workstation.trading .hands-typing {
+      animation: type-fast 0.16s infinite alternate;
+    }
+    .workstation.focused .worker-head {
+      animation: bob 1.8s infinite ease-in-out;
+    }
+
+    /* SPEECH BUBBLE POPPING OVER AVATAR */
+    .speech-bubble {
+      position: absolute;
+      bottom: 68px;
+      background: #020617;
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      opacity: 0.95;
+      z-index: 50;
+      animation: bubble-float 3s infinite ease-in-out;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 4px 4px 0;
+      border-style: solid;
+      border-color: var(--primary) transparent;
+      display: block;
+      width: 0;
+    }
+
+    /* STATION FOOTER LABELS */
+    .station-name { font-size: 11px; font-weight: 800; color: #fff; text-align: center; }
+    .station-role { font-size: 9px; color: var(--text-muted); font-weight: 600; text-align: center; margin-top: 1px; }
+
+    /* MODAL PROFILE CARD */
+    .profile-drawer {
+      position: fixed;
+      right: -380px;
+      top: 0;
+      bottom: 0;
+      width: 360px;
+      background: var(--panel-bg);
+      border-left: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      z-index: 300;
+      padding: 24px;
+      box-shadow: -15px 0 40px rgba(0,0,0,0.8);
+      transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .profile-drawer.open { right: 0; }
+    .drawer-close {
+      background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;
+    }
+
+    /* BOTTOM LIVE DIALOGUE LOG */
+    .live-feed-panel {
+      margin-top: 20px;
+      background: rgba(11, 19, 38, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 20px;
+    }
+    .feed-header {
+      font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--text-muted);
+      letter-spacing: 1px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+    }
+    .live-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: pulse 1s infinite; }
+    .feed-logs {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    .feed-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 12px;
+      background: rgba(2, 6, 23, 0.7);
+      border-radius: 6px;
+      font-size: 11px;
+      border-left: 3px solid var(--primary);
+    }
+    .feed-time { color: var(--text-muted); font-size: 10px; min-width: 65px; }
+    .feed-agent-tag { font-weight: 800; min-width: 85px; }
+    .feed-msg { color: var(--text); flex: 1; }
+
+    /* KEYFRAMES */
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes type-fast {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-3px); }
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(2px); }
+    }
+    @keyframes bar-grow {
+      0% { height: 4px; }
+      100% { height: 16px; }
+    }
+    @keyframes bubble-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.15); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header>
+    <div class="header-main">
+      <div class="brand">
+        <div class="brand-icon">📈</div>
+        <div class="brand-title">
+          <h1>WALL STREET AI TRADING FLOOR</h1>
+          <p>12 Agentes Autónomos Operando en Vivo</p>
+        </div>
+      </div>
+
+      <div class="header-stats">
+        <div class="stat-pill">
+          <span class="lbl">Presupuesto</span>
+          <span class="val" id="top-budget">$100.00</span>
+        </div>
+        <div class="stat-pill">
+          <span class="lbl">Riesgo Máx / Trade</span>
+          <span class="val" style="color:var(--amber);">$2.50</span>
+        </div>
+        <div class="stat-pill">
+          <span class="lbl">Efectivo Disp.</span>
+          <span class="val" id="top-cash">$54.10</span>
+        </div>
+        <div class="stat-pill">
+          <span class="lbl">Modo</span>
+          <span class="val" style="color:var(--green);">PAPER TRADING</span>
+        </div>
+        <div class="stat-pill">
+          <span class="lbl">Alpaca Paper</span>
+          <span class="val" style="color:var(--primary);">CONECTADO</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-action" onclick="runScanner()">⚡ Escanear Mercado</button>
+        <button class="btn btn-excel" onclick="openExcel()">📊 Abrir Excel</button>
+      </div>
+    </div>
+
+    <!-- TICKER TAPE -->
+    <div class="ticker-bar">
+      <div class="ticker-track">
+        <span class="ticker-item">AAPL $234.50 <span class="up">▲ +0.8%</span></span>
+        <span class="ticker-item">META $640.14 <span class="up">▲ +2.81%</span></span>
+        <span class="ticker-item">AAP $45.88 <span class="up">▲ +0.56%</span></span>
+        <span class="ticker-item">TSLA $364.18 <span class="up">▲ +0.55%</span></span>
+        <span class="ticker-item">NVDA $148.20 <span class="up">▲ +1.4%</span></span>
+        <span class="ticker-item">MSFT $524.90 <span class="up">▲ +0.36%</span></span>
+        <span class="ticker-item">AAL $13.39 <span class="up">▲ +0.60%</span></span>
+        <span class="ticker-item">SPY $592.40 <span class="up">▲ +0.45%</span></span>
+        <span class="ticker-item">QQQ $508.10 <span class="up">▲ +0.62%</span></span>
+        <!-- Duplicado para loop infinito -->
+        <span class="ticker-item">AAPL $234.50 <span class="up">▲ +0.8%</span></span>
+        <span class="ticker-item">META $640.14 <span class="up">▲ +2.81%</span></span>
+        <span class="ticker-item">AAP $45.88 <span class="up">▲ +0.56%</span></span>
+        <span class="ticker-item">TSLA $364.18 <span class="up">▲ +0.55%</span></span>
+        <span class="ticker-item">NVDA $148.20 <span class="up">▲ +1.4%</span></span>
+        <span class="ticker-item">MSFT $524.90 <span class="up">▲ +0.36%</span></span>
+        <span class="ticker-item">AAL $13.39 <span class="up">▲ +0.60%</span></span>
+        <span class="ticker-item">SPY $592.40 <span class="up">▲ +0.45%</span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN FLOOR -->
+  <div class="floor-wrapper">
+    <div class="office-room">
+      <!-- SKYLINE VIEW WALL -->
+      <div class="skyline-header">
+        <div class="city-silhouette"></div>
+        <div class="city-buildings"></div>
+        <div class="room-title-badge">
+          <span>🏛️</span> WALL STREET FLOOR - PISO 42 (NEW YORK HEADQUARTERS)
+        </div>
+        <div class="world-clocks">
+          <div class="clock-item">
+            <span>NEW YORK (NYSE)</span>
+            <strong id="clock-ny">14:55:12 ET</strong>
+          </div>
+          <div class="clock-item">
+            <span>LONDON (LSE)</span>
+            <strong>19:55 GMT</strong>
+          </div>
+          <div class="clock-item">
+            <span>TOKYO (TSE)</span>
+            <strong>04:55 JST</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- WORKSTATIONS PODS (3 SECTORS) -->
+      <div class="room-floor">
+        <div class="sectors-container">
+
+          <!-- POD 1: TRADING PIT (EJECUCIÓN PRINCIPAL) -->
+          <div class="sector-pod">
+            <div class="sector-header">
+              <span class="sector-title">⚡ TRADING PIT & EJECUCIÓN</span>
+              <span class="sector-status-pill">ACTIVO</span>
+            </div>
+            <div class="pod-grid" id="pod-trading">
+              <!-- Renderizado dinámico -->
+            </div>
+          </div>
+
+          <!-- POD 2: QUANT & RISK HUB (CONTROL Y SIMULACIÓN) -->
+          <div class="sector-pod">
+            <div class="sector-header">
+              <span class="sector-title">🛡️ QUANT, RISK & ALERTS</span>
+              <span class="sector-status-pill">MONITOREO</span>
+            </div>
+            <div class="pod-grid" id="pod-risk">
+              <!-- Renderizado dinámico -->
+            </div>
+          </div>
+
+          <!-- POD 3: INTEL & REPORTING LAB (INTELIGENCIA Y AUDITORÍA) -->
+          <div class="sector-pod">
+            <div class="sector-header">
+              <span class="sector-title">📊 INTEL, SEC & REPORTING</span>
+              <span class="sector-status-pill">CONECTADO</span>
+            </div>
+            <div class="pod-grid" id="pod-intel">
+              <!-- Renderizado dinámico -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE CONVERSATION FEED -->
+    <div class="live-feed-panel">
+      <div class="feed-header">
+        <div class="live-dot"></div>
+        DIÁLOGO Y ALERTAS EN TIEMPO REAL DEL ENJAMBRE
+      </div>
+      <div class="feed-logs" id="feed-logs">
+        <div class="feed-row">
+          <span class="feed-time">15:48 ET</span>
+          <span class="feed-agent-tag" style="color:#38bdf8;">@alerts</span>
+          <span class="feed-msg">6 reglas activas verificadas. AAP Stop $45.40, Target $46.40. Cierre obligatorio 15:55 ET.</span>
+        </div>
+        <div class="feed-row">
+          <span class="feed-time">15:47 ET</span>
+          <span class="feed-agent-tag" style="color:#22c55e;">@broker</span>
+          <span class="feed-msg">Orden PAPER-ALPAC-AAP-001 ejecutada exitosamente a $45.90. Saldo disponible: $54.10 USD.</span>
+        </div>
+        <div class="feed-row">
+          <span class="feed-time">15:46 ET</span>
+          <span class="feed-agent-tag" style="color:#ef4444;">@risk</span>
+          <span class="feed-msg">Re-evaluación completa en sesión limpia: PASS. Límite de pérdida y posición en regla.</span>
+        </div>
+        <div class="feed-row">
+          <span class="feed-time">15:44 ET</span>
+          <span class="feed-agent-tag" style="color:#a855f7;">@timemachine</span>
+          <span class="feed-msg">10,000 replays para AAP completados: Probabilidad Target 48.3% vs Stop 42.2%.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAWER LATERAL DE PERFIL DEL AGENTE -->
+  <div class="profile-drawer" id="profile-drawer">
+    <div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <span style="font-size:11px; font-weight:800; color:var(--primary); letter-spacing:1px; text-transform:uppercase;">TELEMETRÍA DE ESTACIÓN</span>
+        <button class="drawer-close" onclick="closeDrawer()">✕</button>
+      </div>
+
+      <div style="text-align:center; margin-bottom:20px;">
+        <div id="drawer-avatar" style="width:64px; height:64px; background:#1e293b; border-radius:16px; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:32px; border:2px solid var(--primary); box-shadow:0 0 20px rgba(56,189,248,0.3);">
+          🤖
+        </div>
+        <h3 id="drawer-name" style="font-size:18px; font-weight:800;">Agent Name</h3>
+        <p id="drawer-tag" style="font-size:12px; color:var(--primary); font-weight:700;">@tag</p>
+      </div>
+
+      <div style="background:#020617; border:1px solid #1e293b; border-radius:10px; padding:12px; margin-bottom:16px;">
+        <span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Misión y Rol</span>
+        <p id="drawer-desc" style="font-size:12px; color:#f8fafc; line-height:1.4;"></p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+        <div style="background:#020617; border:1px solid #1e293b; border-radius:8px; padding:10px;">
+          <span style="font-size:9px; color:var(--text-muted); display:block;">ESTADO</span>
+          <strong id="drawer-status" style="font-size:12px; color:var(--green);">OPERANDO</strong>
+        </div>
+        <div style="background:#020617; border:1px solid #1e293b; border-radius:8px; padding:10px;">
+          <span style="font-size:9px; color:var(--text-muted); display:block;">LATENCIA</span>
+          <strong style="font-size:12px; color:#fff;">14ms</strong>
+        </div>
+      </div>
+
+      <div style="background:#020617; border:1px solid #1e293b; border-radius:10px; padding:12px;">
+        <span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Última Salida / Telemetría</span>
+        <pre id="drawer-output" style="font-family:monospace; font-size:11px; color:#38bdf8; white-space:pre-wrap;"></pre>
+      </div>
+    </div>
+
+    <div>
+      <button class="btn btn-action" style="width:100%; justify-content:center; padding:10px;" onclick="triggerAgentRun()">⚡ Ejecutar Comando del Agente</button>
+    </div>
+  </div>
+
+  <script>
+    // DATOS DE LOS 12 AGENTES
+    const AGENTS = [
+      // POD 1: TRADING PIT
+      { id: "scanner", pod: "trading", name: "Chart Scanner", tag: "@scanner", icon: "📡", role: "Escaneo de Mercado", bubble: "Hits: AAP, META", color: "#0284c7", desc: "Escanea el universo de 5,900+ acciones buscando aperturas y rupturas ORB.", out: "Universe: 5,932 equities\nORB 15m Hits: AAP ($45.90), META ($635.67)\nWatchlist actualizada" },
+      { id: "entry", pod: "trading", name: "Entry Timer", tag: "@entry", icon: "⏱️", role: "Timing de Entrada", bubble: "Trigger AAP: $45.90", color: "#22c55e", desc: "Monitorea velas de 5 min y valida la confirmación exacta de entrada.", out: "AAP Vela 5m cerrada: $45.90\nRuptura confirmada barra 23\nEscrito a trader/entry.json" },
+      { id: "exit", pod: "trading", name: "Exit Planner", tag: "@exit", icon: "🎯", role: "Stops & Targets", bubble: "Stop $45.40 / 1R $46.40", color: "#f59e0b", desc: "Fija el Stop-Loss y el objetivo 1R antes de que cualquier orden se genere.", out: "AAP Plan:\nEntry: $45.90\nStop: $45.40 (or-mid)\nTarget: $46.40 (1R)\nRiesgo: $0.50/acc" },
+      { id: "broker", pod: "trading", name: "Order Executor", tag: "@broker", icon: "⚡", role: "Paper Broker", bubble: "FILLED AAP (Paper)", color: "#38bdf8", desc: "Gestiona órdenes y ejecución en Alpaca Paper Trading.", out: "Orden PAPER-ALPAC-AAP-001\n1 AAP BUY ejecutada a $45.90\nEfectivo restante: $54.10" },
+
+      // POD 2: QUANT & RISK
+      { id: "budget", pod: "risk", name: "Budget Manager", tag: "@budget", icon: "💰", role: "Gestor de Capital", bubble: "Marco $100 / $2.50 máx", color: "#22c55e", desc: "Dimensiona posiciones respetando el capital de $100 y pérdida máxima de $2.50.", out: "Presupuesto: $100.00\nPosición AAP: 1 acción ($45.90)\nRiesgo al stop: $0.50 (< $2.50)" },
+      { id: "risk", pod: "risk", name: "Risk Officer", tag: "@risk", icon: "🛡️", role: "Oficial de Riesgo", bubble: "PASS: 0/3 Day Trades", color: "#ef4444", desc: "Audita cada orden contra límites diarios, reglas PDT y ventanas horarias.", out: "Risk Check: PASS\nDrawdown acumulado: $0.50\nPDT Guard: En regla (0/3)\nHorario permitido: 14:46 ET" },
+      { id: "timemachine", pod: "risk", name: "Time Machine", tag: "@timemachine", icon: "⏳", role: "Simulador Cuántico", bubble: "Win Prob: 48.3%", color: "#a855f7", desc: "Simula 10,000 caminos posibles a partir de las velas históricas del activo.", out: "10,000 Replays AAP completados\nTarget first (Win): 48.3%\nStop first: 42.2%\nEsperado: +0.064R" },
+      { id: "alerts", pod: "risk", name: "Price Alerts", tag: "@alerts", icon: "🔔", role: "Alarmas y Salidas", bubble: "6 Reglas Armadas", color: "#38bdf8", desc: "Supervisa niveles de precio en tiempo real y salida obligatoria a las 15:55 ET.", out: "Monitoreando Stop $45.40\nTarget $46.40\nFlat-by close: 15:55 ET\nUmbrales activados: 0" },
+
+      // POD 3: INTEL & REPORTING
+      { id: "news", pod: "intel", name: "News Monitor", tag: "@news", icon: "📰", role: "Catalizadores & 8-K", bubble: "AAP: Semáforo Verde", color: "#22c55e", desc: "Monitorea titulares y reportes 8-K ante la SEC descartando riesgos de eventos.", out: "AAP Q3 reportado el 6 Nov\nSin riesgos de eventos hoy\nNoticias limpias de guidance" },
+      { id: "analyst", pod: "intel", name: "Earnings Analyst", tag: "@analyst", icon: "📈", role: "Analista SEC XBRL", bubble: "Rev +26% YoY", color: "#a855f7", desc: "Analiza balances trimestrales 10-Q e ingresos oficiales ante la SEC.", out: "XBRL Facts procesados\nCuentas con crecimiento sólido\nCero riesgo de sorpresa de EPS hoy" },
+      { id: "pelosi", pod: "intel", name: "Pelosi Tracker", tag: "@pelosi", icon: "🏛️", role: "Rastreo de Congreso", bubble: "STOCK Act Sincronizado", color: "#f59e0b", desc: "Lee reportes PTR de miembros del Congreso en tiempo real.", out: "STOCK Act filings indexados\nNancy Pelosi: Venta WBD\nCross-check con universo: OK" },
+      { id: "reporter", pod: "intel", name: "Executive Excel", tag: "@reporter", icon: "📊", role: "Auditoría Excel", bubble: "Excel Sincronizado", color: "#107c41", desc: "Compila el libro ejecutivo Excel con KPIs, auditoría y bitácora histórica.", out: "Resumen_Ejecutivo_Trading.xlsx\n2 operaciones registradas\nSaldo reflejado: $54.10" }
+    ];
+
+    let currentAgent = null;
+
+    function renderFloor() {
+      ["trading", "risk", "intel"].forEach(podId => {
+        const podContainer = document.getElementById(`pod-${podId}`);
+        podContainer.innerHTML = "";
+        
+        AGENTS.filter(a => a.pod === podId).forEach(agent => {
+          const card = document.createElement("div");
+          card.className = "workstation trading";
+          card.onclick = () => openDrawer(agent);
+
+          card.innerHTML = `
+            <!-- Mini multi-pantalla con gráficos animados -->
+            <div class="monitor-rig">
+              <div class="screen-panel">
+                <div class="mini-ticker-text">${agent.tag}</div>
+                <div class="mini-chart">
+                  <div class="bar green" style="animation-delay:0.1s"></div>
+                  <div class="bar red" style="animation-delay:0.4s"></div>
+                  <div class="bar green" style="animation-delay:0.7s"></div>
+                  <div class="bar blue" style="animation-delay:0.3s"></div>
+                </div>
+              </div>
+              <div class="screen-panel">
+                <div class="mini-ticker-text">NYSE LIVE</div>
+                <div class="mini-chart">
+                  <div class="bar blue" style="animation-delay:0.5s"></div>
+                  <div class="bar green" style="animation-delay:0.2s"></div>
+                  <div class="bar red" style="animation-delay:0.8s"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Avatar del Trabajador con Silla y Animaciones -->
+            <div class="avatar-wrapper">
+              <div class="desk-chair"></div>
+              <div class="speech-bubble">${agent.bubble}</div>
+              <div class="worker-figure">
+                <div class="worker-head">
+                  ${agent.icon}
+                  <div class="status-orb active"></div>
+                </div>
+                <div class="worker-body" style="background:${agent.color}">
+                  <div class="hands-typing"></div>
+                  <div class="hands-typing"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Identificación -->
+            <div class="station-name">${agent.name}</div>
+            <div class="station-role">${agent.role}</div>
+          `;
+
+          podContainer.appendChild(card);
+        });
+      });
+    }
+
+    function openDrawer(agent) {
+      currentAgent = agent;
+      document.getElementById("drawer-avatar").innerText = agent.icon;
+      document.getElementById("drawer-name").innerText = agent.name;
+      document.getElementById("drawer-tag").innerText = agent.tag;
+      document.getElementById("drawer-desc").innerText = agent.desc;
+      document.getElementById("drawer-output").innerText = agent.out;
+      document.getElementById("profile-drawer").classList.add("open");
+    }
+
+    function closeDrawer() {
+      document.getElementById("profile-drawer").classList.remove("open");
+    }
+
+    function openExcel() {
+      fetch("/api/open-excel", { method: "POST" })
+        .then(r => r.json())
+        .then(data => alert(data.msg))
+        .catch(e => alert("Abriendo Excel..."));
+    }
+
+    function runScanner() {
+      fetch("/api/run-scanner", { method: "POST" })
+        .then(r => r.json())
+        .then(data => alert("Escaneo rápido lanzado en segundo plano..."));
+    }
+
+    function triggerAgentRun() {
+      if (currentAgent) {
+        alert(`Comando ejecutado para ${currentAgent.name} (${currentAgent.tag})`);
+      }
+    }
+
+    // Actualizador de reloj
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-US', { hour12: false }) + " ET";
+      document.getElementById("clock-ny").innerText = timeStr;
+    }
+    setInterval(updateClock, 1000);
+
+    // Inicializar
+    renderFloor();
+  </script>
+</body>
+</html>

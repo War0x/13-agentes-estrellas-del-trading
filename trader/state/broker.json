@@ -1,0 +1,46 @@
+{
+  "orders": [
+    {
+      "at": "2026-11-13T14:30:05-05:00",
+      "date": "2026-11-13",
+      "index": 1,
+      "fingerprint": "89f3b7b1bd845bfd",
+      "symbol": "META",
+      "side": "buy",
+      "qty": "5",
+      "kind": "entry",
+      "max_loss": 28.5,
+      "stop": 629.97,
+      "plain": "BUY 5 META, market, good for today / stop-loss 629.97 / take-profit 641.37 / max loss about $28.50 if the stop fills at 629.97 (it can fill worse in a fast market)",
+      "status": "approved",
+      "reply": "yes",
+      "paper": true,
+      "broker": "alpaca"
+    },
+    {
+      "at": "2026-11-13T14:30:10-05:00",
+      "date": "2026-11-13",
+      "index": 1,
+      "fingerprint": "89f3b7b1bd845bfd",
+      "symbol": "META",
+      "side": "buy",
+      "plain": "BUY 5 META, market, good for today / stop-loss 629.97 / take-profit 641.37 / max loss about $28.50 if the stop fills at 629.97 (it can fill worse in a fast market)",
+      "status": "placed",
+      "qty": "5",
+      "kind": "entry",
+      "max_loss": 28.5,
+      "stop": 629.97,
+      "broker_order_id": "PAPER-ALPAC-META-001"
+    },
+    {
+      "at": "2026-11-13T14:30:10-05:00",
+      "date": "2026-11-13",
+      "status": "filled",
+      "symbol": "META",
+      "side": "buy",
+      "qty": "5",
+      "price": 635.67,
+      "plain": "BUY 5 META at 635.67"
+    }
+  ]
+}

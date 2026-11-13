@@ -1,0 +1,29 @@
+{
+  "rules": [
+    {
+      "id": "meta-plan-stop",
+      "symbol": "META",
+      "type": "stop",
+      "price": 629.97,
+      "note": "plan stop: opening-range midpoint",
+      "date": "2026-11-13"
+    },
+    {
+      "id": "meta-plan-target",
+      "symbol": "META",
+      "type": "target",
+      "price": 641.37,
+      "note": "plan target: 1R (one times the risk)",
+      "date": "2026-11-13"
+    },
+    {
+      "id": "meta-flat-by",
+      "symbol": "META",
+      "type": "time",
+      "at": "15:55",
+      "label": "flat by close",
+      "before_close": true,
+      "date": "2026-11-13"
+    }
+  ]
+}

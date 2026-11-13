@@ -1,0 +1,37 @@
+{
+  "as_of": "2026-11-13",
+  "companies": [
+    {
+      "ticker": "META",
+      "name": "Meta Platforms, Inc.",
+      "cik": "0001326801",
+      "period_end": "2026-09-30",
+      "revenue_ttm": 241607000000,
+      "net_income_ttm": 75249000000,
+      "eps_ttm": 29.32,
+      "revenue_growth_yoy": 26.1,
+      "eps_growth_yoy": 264.8,
+      "net_income_growth_yoy": 264.0,
+      "gross_margin": 79.3,
+      "operating_margin": 20.1,
+      "net_margin": 15.3,
+      "source": "SEC XBRL company facts"
+    },
+    {
+      "ticker": "MSFT",
+      "name": "MICROSOFT CORP",
+      "cik": "0000789019",
+      "period_end": "2026-09-30",
+      "revenue_ttm": 346445000000,
+      "net_income_ttm": 142631000000,
+      "eps_ttm": 19.15,
+      "revenue_growth_yoy": 18.8,
+      "eps_growth_yoy": 32.3,
+      "net_income_growth_yoy": 32.0,
+      "gross_margin": 67.8,
+      "operating_margin": 49.8,
+      "net_margin": 39.7,
+      "source": "SEC XBRL company facts"
+    }
+  ]
+}
