@@ -88,6 +88,21 @@
     .btn-excel:hover { background: #0b5c30; transform: translateY(-1px); }
     .btn-action { background: #0284c7; color: #fff; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
     .btn-action:hover { background: #0369a1; transform: translateY(-1px); }
+    .btn-refresh { 
+      background: #1e293b; 
+      color: #f8fafc; 
+      border: 1px solid #334155; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); 
+    }
+    .btn-refresh:hover { 
+      background: #334155; 
+      border-color: #f59e0b; 
+      color: #fbbf24; 
+      transform: translateY(-1px); 
+    }
+    .refresh-icon { display: inline-block; transition: transform 0.3s ease; }
+    .spinning { animation: spin 0.7s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     /* WALL STREET TICKER TAPE */
     .ticker-bar {
@@ -577,6 +592,9 @@
       </div>
 
       <div class="header-actions">
+        <button class="btn btn-refresh" id="btn-refresh" onclick="refreshDashboard(event)" title="Actualizar datos y ventana (Shift+Click para recarga completa)">
+          <span class="refresh-icon" id="refresh-icon">🔄</span> Actualizar
+        </button>
         <button class="btn btn-action" onclick="runScanner()">⚡ Escanear Mercado</button>
         <button class="btn btn-excel" onclick="openExcel()">📊 Abrir Excel</button>
       </div>
@@ -842,6 +860,57 @@
 
     function closeDrawer() {
       document.getElementById("profile-drawer").classList.remove("open");
+    }
+
+    function refreshDashboard(event) {
+      const icon = document.getElementById("refresh-icon");
+      if (icon) icon.classList.add("spinning");
+
+      // Si se hace Shift+Click se realiza un hard reload de la ventana completa
+      if (event && event.shiftKey) {
+        setTimeout(() => window.location.reload(), 200);
+        return;
+      }
+
+      // Consulta de estado en tiempo real a la API local
+      fetch("/api/status")
+        .then(r => r.json())
+        .then(data => {
+          if (data.portfolio && data.portfolio.cash !== undefined) {
+            document.getElementById("top-cash").innerText = "$" + Number(data.portfolio.cash).toFixed(2);
+          }
+          if (data.config && data.config.budget !== undefined) {
+            document.getElementById("top-budget").innerText = "$" + Number(data.config.budget).toFixed(2);
+          }
+          updateClock();
+          renderFloor();
+          showToast("🟢 Ventana y datos sincronizados con Alpaca y el Enjambre");
+        })
+        .catch(() => {
+          window.location.reload();
+        })
+        .finally(() => {
+          setTimeout(() => {
+            if (icon) icon.classList.remove("spinning");
+          }, 600);
+        });
+    }
+
+    function showToast(msg) {
+      let t = document.getElementById("toast");
+      if (!t) {
+        t = document.createElement("div");
+        t.id = "toast";
+        t.style.cssText = "position:fixed; bottom:24px; right:24px; background:#0f172a; border:1px solid #22c55e; color:#22c55e; padding:10px 18px; border-radius:10px; font-size:12px; font-weight:700; box-shadow:0 10px 25px rgba(0,0,0,0.7); z-index:9999; backdrop-filter:blur(10px); transition:all 0.3s ease;";
+        document.body.appendChild(t);
+      }
+      t.innerText = msg;
+      t.style.display = "block";
+      t.style.opacity = "1";
+      setTimeout(() => {
+        t.style.opacity = "0";
+        setTimeout(() => { t.style.display = "none"; }, 300);
+      }, 2500);
     }
 
     function openExcel() {
