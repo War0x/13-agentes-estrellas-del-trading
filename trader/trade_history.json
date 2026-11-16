@@ -25,7 +25,7 @@
     "target": 46.4,
     "risk_usd": 0.5,
     "setup": "orb",
-    "status": "FILLED (PAPER)",
+    "status": "PROPOSED (PAPER)",
     "mode": "PAPER TRADING",
     "notes": "opening-range breakout on AAP: 1 shares, bound by your position cap (1 x 0.50 = $0.50 at the stop)"
   }

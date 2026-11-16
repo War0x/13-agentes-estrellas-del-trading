@@ -553,9 +553,362 @@
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.4; transform: scale(1.15); }
     }
+  
+    /* KEYFRAMES FOR OPERATING RADAR & ALERTS */
+    @keyframes radar-ping {
+      0% { transform: scale(0.95); opacity: 0.9; }
+      70% { transform: scale(2.4); opacity: 0; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+    @keyframes flash-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.9); }
+    }
+    @keyframes alertPulse {
+      0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.85); }
+      100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+    }
+
+    /* OPERATING LIVE BADGE & INDICATORS */
+    .operating-live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      box-shadow: 0 0 14px rgba(34, 197, 94, 0.25);
+      position: relative;
+    }
+    .operating-radar-dot {
+      width: 9px;
+      height: 9px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--green);
+      position: relative;
+    }
+    .operating-radar-dot::after {
+      content: '';
+      position: absolute;
+      top: -3px; left: -3px; right: -3px; bottom: -3px;
+      border: 1.5px solid var(--green);
+      border-radius: 50%;
+      animation: radar-ping 1.8s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+    .operating-icon {
+      font-size: 13px;
+      animation: flash-pulse 1.6s infinite ease-in-out;
+    }
+    .operating-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: var(--green);
+      text-transform: uppercase;
+    }
+    .operating-live-badge.offline {
+      background: rgba(239, 68, 68, 0.16);
+      border-color: rgba(239, 68, 68, 0.65);
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.4);
+    }
+    .operating-live-badge.offline .operating-radar-dot {
+      background: var(--red);
+      box-shadow: 0 0 10px var(--red);
+    }
+    .operating-live-badge.offline .operating-radar-dot::after {
+      border-color: var(--red);
+    }
+    .operating-live-badge.offline .operating-label {
+      color: var(--red);
+    }
+    .operating-live-badge.paused {
+      background: rgba(245, 158, 11, 0.14);
+      border-color: rgba(245, 158, 11, 0.6);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+    }
+    .operating-live-badge.paused .operating-radar-dot {
+      background: var(--amber);
+      box-shadow: 0 0 10px var(--amber);
+    }
+    .operating-live-badge.paused .operating-radar-dot::after {
+      display: none;
+    }
+    .operating-live-badge.paused .operating-label {
+      color: var(--amber);
+    }
+
+    /* NETWORK ALERT BANNER (STICKY TOP) */
+    .network-alert-banner {
+      background: linear-gradient(90deg, #450a0a 0%, #991b1b 50%, #450a0a 100%);
+      border-bottom: 2px solid #ef4444;
+      color: #ffffff;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 99999;
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.55);
+      animation: alertPulse 2s infinite ease-in-out;
+    }
+    .network-alert-banner .alert-icon { font-size: 18px; }
+
+    /* AUTONOMOUS TOGGLE BUTTON */
+    .btn-autonomous {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid var(--green);
+      color: var(--green);
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .btn-autonomous:hover {
+      background: rgba(34, 197, 94, 0.28);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+    }
+    .btn-autonomous.paused {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+    .btn-autonomous.paused:hover {
+      background: rgba(245, 158, 11, 0.22);
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+    }
+    .btn-auto-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      display: inline-block;
+    }
+    .btn-autonomous.paused .btn-auto-dot {
+      background: var(--amber);
+      box-shadow: 0 0 8px var(--amber);
+    }
+    .operating-mini-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 1s infinite;
+    }
+
+    /* SECCIÓN DE ACCIONES ACTIVAS (CARTERA EN VIVO) */
+    .active-stocks-dashboard {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(11, 19, 38, 0.98) 100%);
+      border-bottom: 2px solid var(--border);
+      padding: 16px 28px;
+      position: relative;
+      z-index: 20;
+    }
+    .active-stocks-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .active-stocks-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .active-stocks-title h3 {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .active-stocks-title h3 span {
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .active-badge-counter {
+      background: #1e293b;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+    .active-badge-counter.has-pos {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--green);
+      border-color: rgba(34, 197, 94, 0.5);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+    }
+    .active-stocks-note {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .active-stocks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 14px;
+    }
+    .active-stock-card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    .active-stock-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.7), 0 0 20px rgba(56, 189, 248, 0.2);
+    }
+    .stock-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .stock-symbol-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .stock-icon { font-size: 22px; }
+    .stock-sym { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
+    .stock-network { font-size: 9px; color: var(--primary); font-weight: 700; text-transform: uppercase; display: block; }
+    .stock-status-tag {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--green);
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .stock-card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .stock-price-box {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 7px 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    .stock-price-box.buy-price-box {
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(56, 189, 248, 0.05);
+    }
+    .box-lbl {
+      font-size: 8.5px;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .box-val {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .box-val.primary { color: var(--primary); }
+    .box-val.green { color: var(--green); }
+    .box-val.red { color: var(--red); }
+    .stock-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      background: rgba(2, 6, 23, 0.7);
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .bracket-lbl { color: var(--text-muted); font-weight: 600; margin-right: 2px; }
+    .bracket-val { color: #fff; font-weight: 700; }
+    .empty-positions-card {
+      grid-column: 1 / -1;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px dashed rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .empty-pos-icon { font-size: 28px; }
+    .empty-pos-text h4 {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--green);
+      margin-bottom: 3px;
+      letter-spacing: 0.4px;
+    }
+    .empty-pos-text p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.4;
+    }
+    .empty-pos-badge {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: var(--green);
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
   </style>
 </head>
 <body>
+  <!-- BANNER DE ALERTA DE RED (DESCONECTADO) -->
+  <div id="network-alert-banner" class="network-alert-banner" style="display:none;">
+    <span class="alert-icon">⚠️</span>
+    <span><strong>DESCONECTADO DE ALPACA / INTERNET:</strong> No hay conexión activa a la red. El sistema no generará cotizaciones simuladas ni ejecutará órdenes hasta que la conexión sea restablecida.</span>
+  </div>
+
 
   <!-- TOP HEADER -->
   <header>
@@ -566,34 +919,52 @@
           <h1>WALL STREET AI TRADING FLOOR</h1>
           <p>12 Agentes Autónomos Operando en Vivo</p>
         </div>
+        <div class="operating-live-badge" id="main-operating-badge" title="Monitoreo autónomo en tiempo real con Alpaca Paper">
+          <span class="operating-radar-dot" id="main-operating-dot"></span>
+          <span class="operating-icon" id="main-operating-icon">⚡</span>
+          <span class="operating-label" id="main-operating-label">OPERANDO</span>
+        </div>
       </div>
 
       <div class="header-stats">
+        <div class="stat-pill" id="pill-engine-status">
+          <span class="lbl">Estado Bots</span>
+          <span class="val" id="top-engine-status" style="color:var(--green); display:inline-flex; align-items:center; gap:5px;"><span class="operating-mini-dot" id="dot-engine-status"></span> <span id="txt-engine-status">OPERANDO</span></span>
+        </div>
         <div class="stat-pill">
           <span class="lbl">Presupuesto</span>
           <span class="val" id="top-budget">$100.00</span>
         </div>
         <div class="stat-pill">
-          <span class="lbl">Riesgo Máx / Trade</span>
+          <span class="lbl">Riesgo Máx</span>
           <span class="val" style="color:var(--amber);">$2.50</span>
         </div>
         <div class="stat-pill">
           <span class="lbl">Efectivo Disp.</span>
-          <span class="val" id="top-cash">$54.10</span>
+          <span class="val" id="top-cash">$86.61</span>
         </div>
         <div class="stat-pill">
           <span class="lbl">Modo</span>
-          <span class="val" style="color:var(--green);">PAPER TRADING</span>
+          <span class="val" id="top-mode" style="color:var(--green);">ALPACA PAPER</span>
+        </div>
+        <div class="stat-pill" id="pill-alpaca-status">
+          <span class="lbl">Alpaca Paper</span>
+          <span class="val" id="top-alpaca-status" style="color:var(--primary);">CONECTADO</span>
         </div>
         <div class="stat-pill">
-          <span class="lbl">Alpaca Paper</span>
-          <span class="val" style="color:var(--primary);">CONECTADO</span>
+          <span class="lbl">Activo en Foco</span>
+          <span class="val" id="top-active-pair" style="color:var(--primary);">AAL</span>
+        </div>
+        <div class="stat-pill">
+          <span class="lbl">Precio Foco</span>
+          <span class="val" id="top-active-price" style="color:var(--green);">$13.12</span>
         </div>
       </div>
 
       <div class="header-actions">
-        <button class="btn btn-refresh" id="btn-refresh" onclick="refreshDashboard(event)" title="Actualizar datos y ventana (Shift+Click para recarga completa)">
-          <span class="refresh-icon" id="refresh-icon">🔄</span> Actualizar
+        <button class="btn btn-autonomous" id="btn-autonomous" onclick="toggleAutonomous()" title="Pausar o activar el motor autónomo de trading">
+          <span class="btn-auto-dot" id="btn-auto-dot"></span>
+          <span id="btn-auto-text">⚡ PILOTO: ACTIVO</span>
         </button>
         <button class="btn btn-action" onclick="runScanner()">⚡ Escanear Mercado</button>
         <button class="btn btn-excel" onclick="openExcel()">📊 Abrir Excel</button>
@@ -602,7 +973,7 @@
 
     <!-- TICKER TAPE -->
     <div class="ticker-bar">
-      <div class="ticker-track">
+      <div class="ticker-track" id="ticker-track">
         <span class="ticker-item">AAPL $234.50 <span class="up">▲ +0.8%</span></span>
         <span class="ticker-item">META $640.14 <span class="up">▲ +2.81%</span></span>
         <span class="ticker-item">AAP $45.88 <span class="up">▲ +0.56%</span></span>
@@ -648,6 +1019,23 @@
             <span>TOKYO (TSE)</span>
             <strong>04:55 JST</strong>
           </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN DEDICADA: ACCIONES ACTIVAS EN OPERACIÓN (CARTERA EN VIVO) -->
+      <div class="active-stocks-dashboard">
+        <div class="active-stocks-header">
+          <div class="active-stocks-title">
+            <span style="font-size:18px;">💼</span>
+            <h3>ACCIONES ACTIVAS EN OPERACIÓN <span>(CARTERA EN VIVO)</span></h3>
+            <span class="active-badge-counter" id="active-stocks-count">0 ACTIVAS</span>
+          </div>
+          <div class="active-stocks-note">
+            Acciones en cartera con precio de compra original, cotización de mercado en tiempo real y cálculo dinámico de PnL
+          </div>
+        </div>
+        <div class="active-stocks-grid" id="active-stocks-grid">
+          <!-- Renderizado dinámico -->
         </div>
       </div>
 
@@ -862,37 +1250,313 @@
       document.getElementById("profile-drawer").classList.remove("open");
     }
 
-    function refreshDashboard(event) {
-      const icon = document.getElementById("refresh-icon");
-      if (icon) icon.classList.add("spinning");
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
-      // Si se hace Shift+Click se realiza un hard reload de la ventana completa
-      if (event && event.shiftKey) {
-        setTimeout(() => window.location.reload(), 200);
+    // CONTROL DEL MOTOR AUTÓNOMO
+    function toggleAutonomous() {
+      fetch("/api/toggle-autonomous", { method: "POST" })
+        .then(r => r.json())
+        .then(data => {
+          updateAutonomousButton(data.autonomous);
+          showToast(data.msg);
+          setTimeout(refreshStatus, 300);
+        })
+        .catch(err => {
+          console.error("Error toggling autonomous engine:", err);
+          showToast("⚠️ Error al cambiar modo autónomo");
+        });
+    }
+
+    function updateAutonomousButton(isAuto) {
+      const btn = document.getElementById("btn-autonomous");
+      const txt = document.getElementById("btn-auto-text");
+      if (!btn || !txt) return;
+      if (isAuto) {
+        btn.classList.remove("paused");
+        txt.innerText = "⚡ PILOTO: ACTIVO";
+      } else {
+        btn.classList.add("paused");
+        txt.innerText = "⏸️ PILOTO: PAUSADO";
+      }
+    }
+
+    // RENDERIZADO DE BITÁCORA EN TIEMPO REAL
+    function renderFeedLogs(logs) {
+      const container = document.getElementById("feed-logs");
+      if (!container || !Array.isArray(logs) || logs.length === 0) return;
+
+      const tagColors = {
+        "@engine": "#38bdf8",
+        "@scanner": "#0284c7",
+        "@entry": "#22c55e",
+        "@exit": "#f59e0b",
+        "@broker": "#38bdf8",
+        "@budget": "#22c55e",
+        "@risk": "#ef4444",
+        "@timemachine": "#a855f7",
+        "@alerts": "#38bdf8",
+        "@news": "#22c55e",
+        "@analyst": "#a855f7",
+        "@pelosi": "#f59e0b",
+        "@reporter": "#107c41"
+      };
+
+      let html = "";
+      logs.slice(0, 35).forEach(log => {
+        const time = escapeHtml(log.time || "");
+        const tag = escapeHtml(log.tag || "@engine");
+        const msg = escapeHtml(log.msg || "");
+        const color = tagColors[tag] || "#38bdf8";
+
+        html += `
+          <div class="feed-row">
+            <span class="feed-time">${time}</span>
+            <span class="feed-agent-tag" style="color:${color}; font-weight:800;">${tag}</span>
+            <span class="feed-msg">${msg}</span>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // RENDERIZADO DE ACCIONES ACTIVAS (CON PRECIO DE COMPRA)
+    function renderActiveStocks(positions, tickers, activeSymbol) {
+      const container = document.getElementById("active-stocks-grid");
+      const countBadge = document.getElementById("active-stocks-count");
+      if (!container) return;
+
+      const posList = Array.isArray(positions) ? positions : [];
+      if (countBadge) {
+        countBadge.innerText = `${posList.length} ${posList.length === 1 ? 'ACTIVA' : 'ACTIVAS'}`;
+        if (posList.length > 0) {
+          countBadge.classList.add("has-pos");
+        } else {
+          countBadge.classList.remove("has-pos");
+        }
+      }
+
+      if (posList.length === 0) {
+        const watchSym = activeSymbol || "AAPL, NVDA, TSLA, META";
+        container.innerHTML = `
+          <div class="empty-positions-card">
+            <div class="empty-pos-icon">🛡️</div>
+            <div class="empty-pos-text">
+              <h4>100% EFECTIVO EN CARTERA — SIN ACCIONES ABIERTAS EN ESTE MOMENTO</h4>
+              <p>Tu capital está 100% protegido en efectivo USD. El enjambre de 12 agentes está monitoreando activamente <strong>${escapeHtml(watchSym)}</strong> en Alpaca Paper Trading evaluando aperturas ORB y rupturas de 5 min con ratio R:R ≥ 1.5 y riesgo máx de $2.50.</p>
+            </div>
+            <div class="empty-pos-badge">
+              <span class="operating-mini-dot"></span> AGENTES EN VIGILANCIA
+            </div>
+          </div>
+        `;
         return;
       }
 
-      // Consulta de estado en tiempo real a la API local
+      // Mapa de tickers en vivo
+      const tickerMap = {};
+      if (Array.isArray(tickers)) {
+        tickers.forEach(t => { if (t.symbol) tickerMap[t.symbol] = Number(t.price); });
+      }
+
+      let html = "";
+      posList.forEach(p => {
+        const sym = p.symbol || "EQUITY";
+        const entryPrice = Number(p.entry_price || p.price || 0);
+        let currentPrice = Number(p.current_price || 0);
+        if (!currentPrice && tickerMap[sym]) {
+          currentPrice = tickerMap[sym];
+        }
+        if (!currentPrice) {
+          currentPrice = entryPrice;
+        }
+
+        const qty = Number(p.qty || p.shares || 0);
+        const notional = (currentPrice * qty);
+
+        let pnl = Number(p.pnl || p.unrealized_pl || 0);
+        let pnlPct = Number(p.pnl_pct || p.unrealized_plpc || 0);
+        if (pnl === 0 && entryPrice > 0 && currentPrice !== entryPrice) {
+          pnl = (currentPrice - entryPrice) * qty;
+          pnlPct = ((currentPrice - entryPrice) / entryPrice) * 100.0;
+        }
+
+        const isProfit = pnl >= 0;
+        const pnlCls = isProfit ? "green" : "red";
+        const pnlSign = isProfit ? "+" : "";
+        const pnlArrow = isProfit ? "▲" : "▼";
+
+        const formatP = (val) => {
+          if (!val) return "--";
+          const num = Number(val);
+          return num.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        };
+
+        const stopP = p.stop_price ? `$${formatP(p.stop_price)}` : "--";
+        const targetP = p.target_price ? `$${formatP(p.target_price)}` : "--";
+
+        html += `
+          <div class="active-stock-card">
+            <div class="stock-card-top">
+              <div class="stock-symbol-badge">
+                <span class="stock-icon">🏛️</span>
+                <div>
+                  <span class="stock-sym">${sym}</span>
+                  <span class="stock-network">ALPACA PAPER • CARTERA EN VIVO</span>
+                </div>
+              </div>
+              <div class="stock-status-tag">
+                <span class="operating-mini-dot"></span> EN OPERACIÓN (LONG)
+              </div>
+            </div>
+
+            <div class="stock-card-body">
+              <div class="stock-price-box buy-price-box">
+                <span class="box-lbl">🛒 PRECIO DE COMPRA</span>
+                <span class="box-val primary">$${formatP(entryPrice)} USD</span>
+              </div>
+              <div class="stock-price-box live-price-box">
+                <span class="box-lbl">📈 PRECIO ACTUAL NYSE</span>
+                <span class="box-val ${isProfit ? 'green' : 'red'}">$${formatP(currentPrice)} USD</span>
+              </div>
+              <div class="stock-price-box pnl-box">
+                <span class="box-lbl">💰 PNL EN VIVO</span>
+                <span class="box-val ${isProfit ? 'green' : 'red'}">${pnlArrow} ${pnlSign}$${pnl.toFixed(2)} (${pnlSign}${pnlPct.toFixed(2)}%)</span>
+              </div>
+              <div class="stock-price-box qty-box">
+                <span class="box-lbl">📦 ACCIONES EN POSICIÓN</span>
+                <span class="box-val">${qty.toLocaleString()} (${sym} ~$${notional.toFixed(2)} USD)</span>
+              </div>
+            </div>
+
+            <div class="stock-card-footer">
+              <div class="bracket-item stop-item">
+                <span class="bracket-lbl">🛑 Stop-Loss:</span>
+                <span class="bracket-val">${stopP}</span>
+              </div>
+              <div class="bracket-item target-item">
+                <span class="bracket-lbl">🎯 Take-Profit:</span>
+                <span class="bracket-val">${targetP}</span>
+              </div>
+              <div class="bracket-item time-item">
+                <span class="bracket-lbl">⏱️ Protección:</span>
+                <span class="bracket-val" style="color:var(--green); font-weight:800;">AUDITADA POR @RISK</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function renderTickerTrack(tickers) {
+      const container = document.getElementById("ticker-track");
+      if (!container || !Array.isArray(tickers) || tickers.length === 0) return;
+      let html = "";
+      const makeItem = (t) => {
+        const isUp = t.change_pct >= 0;
+        const sign = isUp ? "▲ +" : "▼ ";
+        const cls = isUp ? "up" : "down";
+        return `<span class="ticker-item"><span class="sym">${t.symbol}</span> <span class="price">$${Number(t.price).toFixed(2)}</span> <span class="${cls}">${sign}${Number(t.change_pct).toFixed(2)}%</span></span>`;
+      };
+      
+      tickers.forEach(t => { html += makeItem(t); });
+      // Duplicar para loop continuo
+      tickers.forEach(t => { html += makeItem(t); });
+      container.innerHTML = html;
+    }
+
+    // SINCRONIZACIÓN PERIÓDICA EN VIVO
+    function refreshStatus() {
       fetch("/api/status")
         .then(r => r.json())
         .then(data => {
+          const banner = document.getElementById("network-alert-banner");
+          const opBadge = document.getElementById("main-operating-badge");
+          const opLabel = document.getElementById("main-operating-label");
+          const pillEngine = document.getElementById("pill-engine-status");
+          const txtEngine = document.getElementById("txt-engine-status");
+          const dotEngine = document.getElementById("dot-engine-status");
+
+          // 1. Manejo de Conectividad Real
+          if (data.connected === false) {
+            if (banner) banner.style.display = "flex";
+            if (opBadge) {
+              opBadge.className = "operating-live-badge offline";
+              opBadge.title = "Desconectado de la red / Alpaca";
+            }
+            if (opLabel) opLabel.innerText = "OFFLINE";
+            if (txtEngine) { txtEngine.innerText = "OFFLINE"; txtEngine.style.color = "var(--red)"; }
+            if (dotEngine) { dotEngine.style.background = "var(--red)"; dotEngine.style.boxShadow = "0 0 8px var(--red)"; }
+            const alpPill = document.getElementById("top-alpaca-status");
+            if (alpPill) { alpPill.innerText = "DESCONECTADO"; alpPill.style.color = "var(--red)"; }
+          } else {
+            if (banner) banner.style.display = "none";
+            const alpPill = document.getElementById("top-alpaca-status");
+            if (alpPill) { alpPill.innerText = "CONECTADO"; alpPill.style.color = "var(--primary)"; }
+
+            // 2. Manejo de Modo Autónomo
+            updateAutonomousButton(data.autonomous);
+
+            if (!data.autonomous) {
+              if (opBadge) {
+                opBadge.className = "operating-live-badge paused";
+                opBadge.title = "Motor autónomo pausado por el usuario";
+              }
+              if (opLabel) opLabel.innerText = "PAUSADO";
+              if (txtEngine) { txtEngine.innerText = "PAUSADO"; txtEngine.style.color = "var(--amber)"; }
+              if (dotEngine) { dotEngine.style.background = "var(--amber)"; dotEngine.style.boxShadow = "0 0 8px var(--amber)"; }
+            } else {
+              if (opBadge) {
+                opBadge.className = "operating-live-badge";
+                opBadge.title = "Monitoreo autónomo activo en Alpaca Paper";
+              }
+              if (opLabel) opLabel.innerText = "OPERANDO";
+              if (txtEngine) { txtEngine.innerText = "OPERANDO"; txtEngine.style.color = "var(--green)"; }
+              if (dotEngine) { dotEngine.style.background = "var(--green)"; dotEngine.style.boxShadow = "0 0 8px var(--green)"; }
+            }
+          }
+
+          // 3. Métricas Financieras
           if (data.portfolio && data.portfolio.cash !== undefined) {
             document.getElementById("top-cash").innerText = "$" + Number(data.portfolio.cash).toFixed(2);
           }
           if (data.config && data.config.budget !== undefined) {
             document.getElementById("top-budget").innerText = "$" + Number(data.config.budget).toFixed(2);
           }
-          updateClock();
-          renderFloor();
-          showToast("🟢 Ventana y datos sincronizados con Alpaca y el Enjambre");
+          if (data.active_symbol) {
+            const symEl = document.getElementById("top-active-pair");
+            if (symEl) symEl.innerText = data.active_symbol;
+          }
+          if (data.active_price) {
+            const prEl = document.getElementById("top-active-price");
+            if (prEl) prEl.innerText = "$" + Number(data.active_price).toFixed(2);
+          }
+
+          // 4. Renderizado de Componentes Dinámicos
+          if (data.logs && data.logs.length > 0) {
+            renderFeedLogs(data.logs);
+          }
+
+          const positions = (data.portfolio && data.portfolio.positions) ? data.portfolio.positions : [];
+          renderActiveStocks(positions, data.tickers || [], data.active_symbol);
+
+          if (data.tickers && data.tickers.length > 0) {
+            renderTickerTrack(data.tickers);
+          }
         })
-        .catch(() => {
-          window.location.reload();
-        })
-        .finally(() => {
-          setTimeout(() => {
-            if (icon) icon.classList.remove("spinning");
-          }, 600);
+        .catch(err => {
+          const banner = document.getElementById("network-alert-banner");
+          if (banner) banner.style.display = "flex";
         });
     }
 
@@ -942,6 +1606,10 @@
 
     // Inicializar
     renderFloor();
+    updateClock();
+    setInterval(updateClock, 1000);
+    setInterval(refreshStatus, 4000);
+    refreshStatus();
   </script>
 </body>
 </html>
