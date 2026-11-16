@@ -1,6 +1,6 @@
 {
   "cash": 86.61,
-  "portfolio_value": 99.73,
+  "portfolio_value": 99.71,
   "currency": "USD",
   "account_number": "PA3QOB9GD",
   "mode": "ALPACA_LIVE_PAPER",
@@ -9,10 +9,10 @@
       "symbol": "AAL",
       "qty": 1.0,
       "entry_price": 13.33,
-      "current_price": 13.12,
-      "pnl": -0.21,
-      "pnl_pct": -1.57,
-      "market_value": 13.12,
+      "current_price": 13.1,
+      "pnl": -0.23,
+      "pnl_pct": -1.73,
+      "market_value": 13.1,
       "side": "LONG",
       "order_id": "41b54729-8470-4593-be38-b3a681871f81"
     }
